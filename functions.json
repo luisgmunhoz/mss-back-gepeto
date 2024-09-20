@@ -1,0 +1,25 @@
+[
+    {
+        "name": "FirebaseAuthorizer",
+        "path": "./authorizers/firebase_authorizer",
+        "description": "An authorizer to validate requests based on a Bearer token present on the Authorization header",
+        "timeout": 60,
+        "triggers": [],
+        "invocations": []
+    },
+    {
+        "name": "Gepeto",
+        "path": "./functions/gepeto",
+        "description": "Uma fun\u00e7\u00e3o lambda que manda os exames e a mensagem do chat do usu\u00e1rio para o ChatGPT analisar",
+        "timeout": 60,
+        "triggers": [
+            {
+                "service": "api_gateway",
+                "trigger": "/gepeto",
+                "method": "POST",
+                "public": false
+            }
+        ],
+        "invocations": []
+    }
+]
