@@ -31,14 +31,7 @@ initialize_app(cred)
 
 
 def lambda_handler(event, context):
-    authorization = event["headers"].get("Authorization", "")
-    logging.info("splitting token")
-    authorization_token = authorization.split("Bearer ")
-    if len(authorization_token) < 2:
-        policy = generate_policy("deny")
-        logging.info("invalid token")
-        return policy
-    token = authorization_token[-1]
+    token = event["headers"].get("secret", "")
     logging.info("verifying token")
     try:
         decoded_token = auth.verify_id_token(token)
