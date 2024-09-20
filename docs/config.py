@@ -5,7 +5,10 @@ class DocsConfig:
     def __init__(self, services: Services) -> None:
         # Swagger at /swagger
         services.api_gateway.create_docs(
-            endpoint="/swagger", artifact="swagger", public=True
+            endpoint="/swagger",
+            artifact="swagger",
+            public=True,
+            authorizer="firebase_authorizer",
         )
 
         # Redoc at /redoc
