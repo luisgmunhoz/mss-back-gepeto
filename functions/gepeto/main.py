@@ -5,15 +5,6 @@ from typing import Optional
 from firebase_admin import credentials, initialize_app, firestore, App
 import sm_utils
 
-# Retrieve the secret from Secrets Manager
-FIREBASE_SECRET_NAME = os.environ["FIREBASE_SECRET_NAME"]
-FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
-
-cred = credentials.Certificate(FIREBASE_SECRET)
-
-initialize_app(cred)
-
-
 class FirebaseAppSingleton:
     _instance: Optional[App] = None
 
