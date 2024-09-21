@@ -6,6 +6,14 @@ import logging
 
 import sm_utils
 
+# Retrieve the secret from Secrets Manager
+FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
+FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
+
+cred = credentials.Certificate(FIREBASE_SECRET)
+
+initialize_app(cred)
+
 
 def lambda_handler(event, context):
     authorization = event["headers"].get("Authorization", "")
@@ -17,13 +25,6 @@ def lambda_handler(event, context):
         return policy
     token = authorization_token[-1]
     logging.info("verifying token")
-    # Retrieve the secret from Secrets Manager
-    FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
-    FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
-
-    cred = credentials.Certificate(FIREBASE_SECRET)
-
-    initialize_app(cred)
 
     try:
         decoded_token = auth.verify_id_token(token)
