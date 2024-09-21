@@ -12,8 +12,14 @@ class Layers:
 
         self.sm_utils_layer = _lambda.LayerVersion(
             scope,
-            id='SmUtilsLayer',
-            code=_lambda.Code.from_asset(Path.layer('layers/sm_utils')),
+            id="SmUtilsLayer",
+            code=_lambda.Code.from_asset(Path.layer("layers/sm_utils")),
             compatible_runtimes=[_lambda.Runtime.PYTHON_3_9],
-            description='',
-         )
+            description="",
+        )
+
+        self.google_cloud_firestore_layer = _lambda.LayerVersion.from_layer_version_arn(
+            scope,
+            id="Google-Cloud-FirestoreLayer",
+            layer_version_arn="arn:aws:lambda:sa-east-1:396608797965:layer:google-cloud-firestore:1",
+        )

@@ -51,7 +51,7 @@ def lambda_handler(event, context):
     meds_col = doc_ref.collection("medications")
     meds = meds_col.stream()
     meds_data = [med.to_dict() for med in meds]
-    birthday = user_data.get("birthday")
+    birthday = user_data.get("birthday").isoformat()
 
     return {
         "statusCode": 200,
