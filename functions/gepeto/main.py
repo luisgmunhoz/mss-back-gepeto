@@ -1,24 +1,5 @@
 import json
 from dataclasses import dataclass
-import os
-from typing import Optional
-from firebase_admin import credentials, initialize_app, App
-import sm_utils
-
-
-class FirebaseAppSingleton:
-    _instance: Optional[App] = None
-
-    @classmethod
-    def get_instance(cls) -> App:
-        if cls._instance is None:
-            # Retrieve the secret from Secrets Manager
-            FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
-            FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
-
-            cred = credentials.Certificate(FIREBASE_SECRET)
-            cls._instance = initialize_app(cred)
-        return cls._instance
 
 
 @dataclass
@@ -39,7 +20,6 @@ class Output:
 
 
 def lambda_handler(event, context):
-    FirebaseAppSingleton.get_instance()
     print(event)
     uid = event.get("requestContext", {}).get("authorizer", {}).get("uid")
     print("uid: ", uid)
