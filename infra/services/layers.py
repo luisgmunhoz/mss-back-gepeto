@@ -18,8 +18,8 @@ class Layers:
             description="",
         )
 
-        self.firestore_layer = _lambda.LayerVersion.from_layer_version_arn(
+        self.google_cloud_firestore_layer = _lambda.LayerVersion.from_layer_version_arn(
             scope,
-            id="Google-Cloud-FirestoreLayer",
-            layer_version_arn="arn:aws:lambda:sa-east-1:396608797965:layer:google-cloud-firestore:1",
-        )
+            id='GoogleCloudFirestoreLayer',
+            layer_version_arn='arn:aws:lambda:sa-east-1:396608797965:layer:google_cloud_firestore:1',
+         )

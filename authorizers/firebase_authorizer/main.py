@@ -1,4 +1,3 @@
-import json
 import os
 from typing import Literal, Optional
 from firebase_admin import auth, credentials, initialize_app

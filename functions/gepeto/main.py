@@ -5,7 +5,7 @@ from firebase_admin import credentials, initialize_app, firestore
 import sm_utils
 
 # Retrieve the secret from Secrets Manager
-FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
+FIREBASE_SECRET_NAME = os.environ["FIREBASE_SECRET_NAME"]
 FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
 
 cred = credentials.Certificate(FIREBASE_SECRET)
@@ -26,6 +26,7 @@ class Output:
 def lambda_handler(event, context):
     print(event)
     uid = event.get("requestContext", {}).get("authorizer", {}).get("uid")
+    print("uid: ", uid)
     client = firestore.client()
     initial_path = "users/" + uid
     doc_ref = client.document(initial_path)
@@ -38,10 +39,13 @@ def lambda_handler(event, context):
         }
     user_data = doc.to_dict()
     weight = user_data.get("weight")
+    print("weight: ", weight)
     height = user_data.get("height")
+    print("height: ", height)
     bmi = None
     if weight is not None and height is not None:
         bmi = weight / (height**2)
+    print("bmi: ", bmi)
     exams_col = doc_ref.collection("exams")
     exams = exams_col.stream()
     exams_data = [exam.to_dict() for exam in exams]
@@ -52,6 +56,7 @@ def lambda_handler(event, context):
     meds = meds_col.stream()
     meds_data = [med.to_dict() for med in meds]
     birthday = user_data.get("birthday").isoformat()
+    message = event.get("body")
 
     return {
         "statusCode": 200,
@@ -60,6 +65,7 @@ def lambda_handler(event, context):
                 "weight": weight,
                 "height": height,
                 "bmi": bmi,
+                "request": message,
                 "message": "Hello from Gepeto!",
                 "exams": exams_data,
                 "appointments": appointments_data,
