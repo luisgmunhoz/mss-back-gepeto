@@ -23,12 +23,12 @@ def lambda_handler(event, context):
     FirebaseAppSingleton.get_instance()
     authorization = event["headers"].get("Authorization", "")
     print("splitting token")
-    authorization_token = authorization.split("Bearer ")
-    if len(authorization_token) < 2:
+    authorization_token = authorization.split(" ")
+    if len(authorization_token) != 2:
         policy = generate_policy("deny")
         print("invalid token")
         return policy
-    token = authorization_token[-1]
+    token = authorization_token[1]
     print("verifying token")
 
     try:
