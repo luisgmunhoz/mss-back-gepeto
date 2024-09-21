@@ -2,8 +2,6 @@ import json
 import os
 from typing import Literal, Optional
 from firebase_admin import auth, credentials, initialize_app
-import logging
-
 import sm_utils
 
 # Retrieve the secret from Secrets Manager
@@ -17,20 +15,20 @@ initialize_app(cred)
 
 def lambda_handler(event, context):
     authorization = event["headers"].get("Authorization", "")
-    logging.info("splitting token")
+    print("splitting token")
     authorization_token = authorization.split("Bearer ")
     if len(authorization_token) < 2:
         policy = generate_policy("deny")
-        logging.info("invalid token")
+        print("invalid token")
         return policy
     token = authorization_token[-1]
-    logging.info("verifying token")
+    print("verifying token")
 
     try:
         decoded_token = auth.verify_id_token(token)
     except Exception:
         return generate_policy("deny")
-    logging.info("token verified")
+    print("token verified")
     uid = decoded_token["uid"]
 
     return generate_policy("allow", uid)
