@@ -22,6 +22,8 @@ class FirebaseAppSingleton:
 def lambda_handler(event, context):
     FirebaseAppSingleton.get_instance()
     authorization = event["headers"].get("Authorization", "")
+    if authorization == "":
+        authorization = event["headers"].get("authorization", "")
     print("splitting token")
     authorization_token = authorization.split(" ")
     if len(authorization_token) != 2:
