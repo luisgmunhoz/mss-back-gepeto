@@ -1,9 +1,10 @@
 import json
+from typing import Union
 
 import boto3
 
 
-def get_secret(secret_name: str) -> dict | str:
+def get_secret(secret_name: str) -> Union[str, dict]:
     # Initialize the Secrets Manager client
     sm_client = boto3.client("secretsmanager")
 
