@@ -1,18 +1,26 @@
 import os
 from typing import Literal, Optional
-from firebase_admin import auth, credentials, initialize_app
+from firebase_admin import auth, credentials, initialize_app, App
 import sm_utils
 
-# Retrieve the secret from Secrets Manager
-FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
-FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
 
-cred = credentials.Certificate(FIREBASE_SECRET)
+class FirebaseAppSingleton:
+    _instance: Optional[App] = None
 
-initialize_app(cred)
+    @classmethod
+    def get_instance(cls) -> App:
+        if cls._instance is None:
+            # Retrieve the secret from Secrets Manager
+            FIREBASE_SECRET_NAME = os.environ.get("FIREBASE_SECRET_NAME")
+            FIREBASE_SECRET = sm_utils.get_secret(FIREBASE_SECRET_NAME)
+
+            cred = credentials.Certificate(FIREBASE_SECRET)
+            cls._instance = initialize_app(cred)
+        return cls._instance
 
 
 def lambda_handler(event, context):
+    FirebaseAppSingleton.get_instance()
     authorization = event["headers"].get("Authorization", "")
     print("splitting token")
     authorization_token = authorization.split("Bearer ")
