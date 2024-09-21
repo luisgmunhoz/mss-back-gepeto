@@ -10,7 +10,6 @@ class GepetoConfig:
             layers=[
                 services.layers.firebase_admin_layer,
                 services.layers.sm_utils_layer,
-                services.layers.google_cloud_firestore_layer,
             ],
             environment={
                 "FIREBASE_SECRET_NAME": services.secrets_manager.svc_secret.secret_name

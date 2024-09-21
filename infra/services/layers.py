@@ -17,9 +17,3 @@ class Layers:
             compatible_runtimes=[_lambda.Runtime.PYTHON_3_9],
             description="",
         )
-
-        self.google_cloud_firestore_layer = _lambda.LayerVersion.from_layer_version_arn(
-            scope,
-            id='GoogleCloudFirestoreLayer',
-            layer_version_arn='arn:aws:lambda:sa-east-1:396608797965:layer:google_cloud_firestore:1',
-         )

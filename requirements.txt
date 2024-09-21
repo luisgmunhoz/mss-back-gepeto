@@ -12,6 +12,3 @@ moto==4.1.7
 requests==2.31.0
 coverage==7.2.3
 firebase_admin==6.5.0
-google-cloud-firestore==2.18.0
-
-google_cloud_firestore==2.18.0

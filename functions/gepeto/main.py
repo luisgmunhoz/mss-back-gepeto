@@ -2,8 +2,9 @@ import json
 from dataclasses import dataclass
 import os
 from typing import Optional
-from firebase_admin import credentials, initialize_app, firestore, App
+from firebase_admin import credentials, initialize_app, App
 import sm_utils
+
 
 class FirebaseAppSingleton:
     _instance: Optional[App] = None
@@ -23,6 +24,13 @@ class FirebaseAppSingleton:
 @dataclass
 class Input:
     message: str
+    weight: float
+    height: float
+    bmi: float
+    exams_data: list
+    appointments_data: list
+    meds_data: list
+    birthday: str
 
 
 @dataclass
@@ -35,36 +43,15 @@ def lambda_handler(event, context):
     print(event)
     uid = event.get("requestContext", {}).get("authorizer", {}).get("uid")
     print("uid: ", uid)
-    client = firestore.client()
-    initial_path = "users/" + uid
-    doc_ref = client.document(initial_path)
-    doc = doc_ref.get()
-    if not doc.exists:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({"message": "User not found"}),
-            "headers": {"Access-Control-Allow-Origin": "*"},
-        }
-    user_data = doc.to_dict()
-    weight = user_data.get("weight")
-    print("weight: ", weight)
-    height = user_data.get("height")
-    print("height: ", height)
-    bmi = None
-    if weight is not None and height is not None:
-        bmi = weight / (height**2)
-    print("bmi: ", bmi)
-    exams_col = doc_ref.collection("exams")
-    exams = exams_col.stream()
-    exams_data = [exam.to_dict() for exam in exams]
-    appointments_col = doc_ref.collection("appointments")
-    appointments = appointments_col.stream()
-    appointments_data = [appointment.to_dict() for appointment in appointments]
-    meds_col = doc_ref.collection("medications")
-    meds = meds_col.stream()
-    meds_data = [med.to_dict() for med in meds]
-    birthday = user_data.get("birthday").isoformat()
-    message = event.get("body")
+    body = json.loads(event["body"])
+    weight = body.get("weight")
+    height = body.get("height")
+    bmi = body.get("bmi")
+    message = body.get("message")
+    birthday = body.get("birthday")
+    exams_data = body.get("exams", [])
+    appointments_data = body.get("appointments", [])
+    meds_data = body.get("medications", [])
 
     return {
         "statusCode": 200,
