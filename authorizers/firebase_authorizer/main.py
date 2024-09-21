@@ -25,6 +25,7 @@ def lambda_handler(event, context):
     print("splitting token")
     authorization_token = authorization.split(" ")
     if len(authorization_token) != 2:
+        print(authorization_token)
         policy = generate_policy("deny")
         print("invalid token")
         return policy
