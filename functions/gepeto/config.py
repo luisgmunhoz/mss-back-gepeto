@@ -10,8 +10,6 @@ class GepetoConfig:
             layers=[
                 services.layers.openai_layer,
                 services.layers.sm_utils_layer,
-                services.layers.pydantic_layer,
-                services.layers.pydantic_core_layer,
             ],
             environment={
                 "OPENAI_SECRET_NAME": services.secrets_manager.openai_secret.secret_name

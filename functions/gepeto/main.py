@@ -1,6 +1,5 @@
 import os
 import openai
-from openai import OpenAI
 
 import json
 from dataclasses import dataclass
@@ -52,10 +51,10 @@ def lambda_handler(event, context):
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     print("openai_secret_name: ", openai_secret_name)
     openai_secret = sm_utils.get_secret(openai_secret_name)
-    client = OpenAI(api_key=openai_secret)
+    openai.api_key = openai_secret
     prompt = f"The following data are, exams, bmi, weight, height, birthday, appointments booked and recurring meds the patient takes, do a analysis based on the users question:\n\n{medical_data_str}\n answer in portuguese"
 
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": prompt},
