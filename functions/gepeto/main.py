@@ -16,6 +16,8 @@ class Input:
     bmi: float
     exams_data: list
     appointments_data: list
+    messages: list[dict]
+    gender: str
     meds_data: list
     birthday: str
 
@@ -37,6 +39,8 @@ def lambda_handler(event, context):
     exams_data = body.get("exams", [])
     appointments_data = body.get("appointments", [])
     meds_data = body.get("medications", [])
+    prev_messages = body.get("messages", [])
+    gender = body.get("gender", "indefinido")
 
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     open_ai_api_key = sm_utils.get_secret(openai_secret_name)
@@ -56,12 +60,12 @@ def lambda_handler(event, context):
         / 24
         / 365
     )
-    print(age)
-    prompt = f"o Usuário tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age} e teve dados de exames: {data}, você deve responder sua pergunta em português."
+    prompt = f"o Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age} e teve dados de exames: {data}, você deve responder sua pergunta em português."
 
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[
+            *prev_messages,
             {"role": "system", "content": prompt},
             {
                 "role": "user",
