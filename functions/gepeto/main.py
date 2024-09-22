@@ -1,5 +1,6 @@
 import os
 import openai
+import pandas as pd
 
 import json
 from dataclasses import dataclass
@@ -36,23 +37,14 @@ def lambda_handler(event, context):
     appointments_data = body.get("appointments", [])
     meds_data = body.get("medications", [])
 
-    medical_data_str = json.dumps(
-        {
-            "weight": weight,
-            "height": height,
-            "bmi": bmi,
-            "message": message,
-            "exams": exams_data,
-            "appointments": appointments_data,
-            "medications": meds_data,
-            "birthday": birthday,
-        }
-    )
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     print("openai_secret_name: ", openai_secret_name)
     openai_secret = sm_utils.get_secret(openai_secret_name)
     openai.api_key = openai_secret
-    prompt = f"The following data are, exams, bmi, weight, height, birthday, appointments booked and recurring meds the patient takes, do a analysis based on the users question:\n\n{medical_data_str}\n answer in portuguese"
+    df = pd.DataFrame(exams_data)
+    sample = df.sample(1)
+    data = sample.to_dict(orient="records")
+    prompt = f"user has bmi: {bmi}, weight: {weight}, height: {height}, bday: {birthday}, appointments booked: {', '.join([appointment['description'] for appointment in appointments_data])}, recurring meds: {', '.join([med['name'] for med in meds_data])}, exams: {data}, do a analysis based on the users question"
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
