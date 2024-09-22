@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 import os
-import openai
+from openai import OpenAI
 import pandas as pd
 
 import json
@@ -38,27 +39,38 @@ def lambda_handler(event, context):
     meds_data = body.get("medications", [])
 
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
-    print("openai_secret_name: ", openai_secret_name)
-    openai_secret = sm_utils.get_secret(openai_secret_name)
-    openai.api_key = openai_secret
-    df = pd.DataFrame(exams_data)
-    sample = df.sample(1)
-    data = sample.to_dict(orient="records")
-    prompt = f"user has bmi: {bmi}, weight: {weight}, height: {height}, bday: {birthday}, appointments booked: {', '.join([appointment['description'] for appointment in appointments_data])}, recurring meds: {', '.join([med['name'] for med in meds_data])}, exams: {data}, do a analysis based on the users question"
+    open_ai_api_key = sm_utils.get_secret(openai_secret_name)
+    client = OpenAI(api_key=open_ai_api_key)
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    df = pd.concat((pd.DataFrame(d) for d in exams_data), ignore_index=True)[
+        ["Data", "RESULTADOS", "ANALITOS", "VALORES DE REFERÊNCIA"]
+    ].dropna(subset=["RESULTADOS"])
+    df["Timestamp"] = df["Data"].apply(lambda x : x["seconds"])
+    df = df.drop(columns=["Data"])
+    sample = df.sample(len(df) // 10)
+    data = sample.to_dict(orient="records")
+    age = (
+        (datetime.now() - datetime.fromisoformat(birthday[:-1])).total_seconds()
+        / 60
+        / 60
+        / 24
+        / 365
+    )
+    print(age)
+    prompt = f"o Usuário tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age} e teve dados de exames: {data}, você deve responder sua pergunta em português."
+
+    response = client.chat.completions.create(
+        model="gpt-4",
         messages=[
             {"role": "system", "content": prompt},
             {
                 "role": "user",
-                "content": message,
+                "content": f"Responda em português: {message}",
             },
         ],
-        max_tokens=1500,  # Adjust based on the amount of data and response size you expect
-        temperature=0.2,  # Lower temperature for more factual responses
+        max_tokens=120,  # Adjust based on the amount of data and response size you expect
+        temperature=0.4,  # Lower temperature for more factual responses
     )
-
     # Get the text output from the response
     analysis = response.choices[0].message.content
 

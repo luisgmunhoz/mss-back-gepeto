@@ -21,7 +21,7 @@ class Layers:
         self.openai_layer = _lambda.LayerVersion.from_layer_version_arn(
             scope,
             id="OpenaiLayer",
-            layer_version_arn="arn:aws:lambda:sa-east-1:396608797965:layer:openailayer:1",
+            layer_version_arn="arn:aws:lambda:sa-east-1:396608797965:layer:openailayer:4",
         )
         self.pandas_layer = _lambda.LayerVersion.from_layer_version_arn(
             scope,
