@@ -15,4 +15,4 @@ firebase_admin==6.5.0
 openai==1.47.0
 
 pydantic==2.7.3
-pydantic_core==2.18.4
+pydantic-core==2.18.4
