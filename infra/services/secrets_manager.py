@@ -8,3 +8,8 @@ class SecretsManager:
             id="SvcSecret",
             secret_complete_arn="arn:aws:secretsmanager:sa-east-1:396608797965:secret:prod/app/firebase_svc_acc_key-cJFoqg",
         )
+        self.openai_secret = sm.Secret.from_secret_complete_arn(
+            scope,
+            id="OpenaiSecret",
+            secret_complete_arn="arn:aws:secretsmanager:sa-east-1:396608797965:secret:prod/app/openai_key-XmxhIK",
+        )
