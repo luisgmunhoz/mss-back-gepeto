@@ -54,7 +54,7 @@ def lambda_handler(event, context):
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     open_ai_api_key = sm_utils.get_secret(openai_secret_name)
     client = OpenAI(api_key=open_ai_api_key)
-    prompt = f"o Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age} "
+    prompt = f"Você é um assistente de saude e só sabe sobre saúde ajude como puder mas apenas questões de saúde seu Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age}"
     if appointments_data:
         prompt += f"e tem as seguintes consultas marcadas: {', '.join([a['description'] for a in appointments_data])} "
     else:
