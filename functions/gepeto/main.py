@@ -2,24 +2,26 @@ from datetime import datetime
 import os
 from openai import OpenAI
 import pandas as pd
+import numpy as np
 
 import json
 from dataclasses import dataclass
 import sm_utils
+from typing import Optional, List
 
 
 @dataclass
 class Input:
     message: str
-    weight: float
-    height: float
-    bmi: float
-    exams_data: list
-    appointments_data: list
-    messages: list[dict]
-    gender: str
-    meds_data: list
-    birthday: str
+    weight: Optional[float] = None
+    height: Optional[float] = None
+    bmi: Optional[float] = None
+    exams_data: Optional[List] = None
+    appointments_data: Optional[List] = None
+    messages: Optional[List[dict]] = None
+    gender: Optional[str] = "indefinido"
+    meds_data: Optional[List] = None
+    birthday: Optional[str] = None
 
 
 @dataclass
@@ -54,17 +56,22 @@ def lambda_handler(event, context):
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     open_ai_api_key = sm_utils.get_secret(openai_secret_name)
     client = OpenAI(api_key=open_ai_api_key)
-    prompt = f"o Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age} "
+
+    # Constructing the prompt
+    prompt = f"Você é um assistente de saude e só sabe sobre saúde ajude como puder mas apenas questões de saúde  foque em dar dicas médicas não faça textos longos. Seu Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age}"
+
     if appointments_data:
-        prompt += f"e tem as seguintes consultas marcadas: {', '.join([a['description'] for a in appointments_data])} "
+        prompt += f" e tem as seguintes consultas marcadas: {', '.join([a['description'] for a in appointments_data])} "
     else:
-        prompt += "e não tem consultas marcadas. "
+        prompt += " e não tem consultas marcadas. "
+
     if meds_data:
-        prompt += f"e tem as seguintes medicações cadastradas: {', '.join([m['name'] for m in meds_data])} "
+        prompt += f" e tem as seguintes medicações cadastradas: {', '.join([m['name'] for m in meds_data])} "
     else:
-        prompt += "e não tem medicações cadastradas. "
+        prompt += " e não tem medicações cadastradas. "
+
     if not exams_data:
-        prompt += "e não tem dados de exames cadastrados, você deve responder sua pergunta em português e recomendar que ele cadastre seus exames no sistema."
+        prompt += " e não tem dados de exames cadastrados, você deve responder sua pergunta em português e recomendar que ele cadastre seus exames no sistema."
         analysis = get_analysis(message, prev_messages, client, prompt)
         return {
             "statusCode": 200,
@@ -89,10 +96,9 @@ def lambda_handler(event, context):
     ].dropna(subset=["RESULTADOS"])
     df["Timestamp"] = df["Data"].apply(lambda x: x["seconds"])
     df = df.drop(columns=["Data"])
-    sample = df.sample(len(df) // 10)
-    data = sample.to_dict(orient="records")
+    data = df.to_dict(orient="records")
 
-    prompt += f"e teve dados de exames: {data}, você deve responder sua pergunta em português."
+    prompt += f" e teve dados de exames: {data}, você deve responder sua pergunta em português."
     analysis = get_analysis(message, prev_messages, client, prompt)
 
     return {
@@ -117,9 +123,8 @@ def lambda_handler(event, context):
 def get_analysis(
     message: str, prev_messages: list[dict[str, str]], client: OpenAI, prompt: str
 ) -> str:
-    print(prompt)
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             *prev_messages,
             {"role": "system", "content": prompt},
