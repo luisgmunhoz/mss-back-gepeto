@@ -51,6 +51,7 @@ def lambda_handler(event, context):
             / 24
             / 365
         )
+    print("Log pq o guerra quebrou a api e preciso de um commit pro deploy")
 
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     open_ai_api_key = sm_utils.get_secret(openai_secret_name)
