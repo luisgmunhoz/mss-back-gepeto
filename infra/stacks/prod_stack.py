@@ -27,7 +27,7 @@ class ProdStack(cdk.Stack):
             code_build_defaults=pipelines.CodeBuildOptions(
                 build_environment=codebuild.BuildEnvironment(
                     build_image=codebuild.LinuxBuildImage.from_docker_registry(
-                        ECR.LATEST
+                        "public.ecr.aws/z2b4s9q0/forge-bolsonarista:latest"
                     ),
                 )
             ),
