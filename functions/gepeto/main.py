@@ -6,12 +6,7 @@ import pandas as pd
 import json
 from dataclasses import dataclass
 import sm_utils
-from typing import Any, Dict, Literal, Optional, List, TypedDict
-
-
-class Message(TypedDict):
-    role: Literal["user", "system", "assistant"]
-    content: str
+from typing import Any, Dict, Literal, List, TypedDict
 
 
 @dataclass
@@ -22,7 +17,7 @@ class Input:
     bmi: float
     exams_data: List[Dict[str, Any]]
     appointments_data: List[Dict[str, Any]]
-    messages: List[Message]
+    messages: List[Dict[str, str]]
     gender: str
     meds_data: List
     birthday: str
