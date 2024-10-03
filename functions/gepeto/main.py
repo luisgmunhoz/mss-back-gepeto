@@ -6,21 +6,26 @@ import pandas as pd
 import json
 from dataclasses import dataclass
 import sm_utils
-from typing import Optional, List
+from typing import Any, Dict, Literal, Optional, List, TypedDict
+
+
+class Message(TypedDict):
+    role: Literal["user", "system", "assistant"]
+    content: str
 
 
 @dataclass
 class Input:
     message: str
-    weight: Optional[float] = None
-    height: Optional[float] = None
-    bmi: Optional[float] = None
-    exams_data: Optional[List] = None
-    appointments_data: Optional[List] = None
-    messages: Optional[List[dict]] = None
-    gender: Optional[str] = "indefinido"
-    meds_data: Optional[List] = None
-    birthday: Optional[str] = None
+    weight: Optional[float]
+    height: Optional[float]
+    bmi: Optional[float]
+    exams_data: Optional[List[Dict[str, Any]]]
+    appointments_data: Optional[List[Dict[str, Any]]]
+    messages: Optional[List[Message]]
+    gender: Optional[str]
+    meds_data: Optional[List]
+    birthday: Optional[str]
 
 
 @dataclass
@@ -51,14 +56,13 @@ def lambda_handler(event, context):
             / 24
             / 365
         )
-    print("Log pq o guerra quebrou a api e preciso de um commit pro deploy")
 
     openai_secret_name = os.environ["OPENAI_SECRET_NAME"]
     open_ai_api_key = sm_utils.get_secret(openai_secret_name)
     client = OpenAI(api_key=open_ai_api_key)
 
     # Constructing the prompt
-    prompt = f"Você é um assistente de saude e só sabe sobre saúde ajude como puder mas apenas questões de saúde  foque em dar dicas médicas não faça textos longos. Seu Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age}"
+    prompt = f"Você é um assistente de saúde e só sabe sobre saúde ajude como puder mas apenas questões de saúde, se apresente como Dr. Flamingo, o assistente virtual da YE, foque em dar dicas médicas, não faça textos longos. Seu Usuário é do sexo: {gender}, tem imc: {bmi}, peso: {weight} kg, altura: {height}m, idade: {age}"
 
     if appointments_data:
         prompt += f" e tem as seguintes consultas marcadas: {', '.join([a['description'] for a in appointments_data])} "
@@ -105,15 +109,7 @@ def lambda_handler(event, context):
         "statusCode": 200,
         "body": json.dumps(
             {
-                "weight": weight,
-                "height": height,
-                "bmi": bmi,
-                "request": message,
                 "message": analysis,
-                "exams": exams_data,
-                "appointments": appointments_data,
-                "medications": meds_data,
-                "birthday": birthday,
             }
         ),
         "headers": {"Access-Control-Allow-Origin": "*"},
@@ -121,7 +117,7 @@ def lambda_handler(event, context):
 
 
 def get_analysis(
-    message: str, prev_messages: list[dict[str, str]], client: OpenAI, prompt: str
+    message: str, prev_messages: List[Dict[str, str]], client: OpenAI, prompt: str
 ) -> str:
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -130,11 +126,11 @@ def get_analysis(
             {"role": "system", "content": prompt},
             {
                 "role": "user",
-                "content": f"Responda em português: {message}",
+                "content": message,
             },
         ],
         max_tokens=360,
-        temperature=0.4,  # Lower temperature for more factual responses
+        temperature=0.4,
     )
     # Get the text output from the response
     analysis = response.choices[0].message.content
