@@ -17,15 +17,15 @@ class Message(TypedDict):
 @dataclass
 class Input:
     message: str
-    weight: Optional[float]
-    height: Optional[float]
-    bmi: Optional[float]
-    exams_data: Optional[List[Dict[str, Any]]]
-    appointments_data: Optional[List[Dict[str, Any]]]
-    messages: Optional[List[Message]]
-    gender: Optional[str]
-    meds_data: Optional[List]
-    birthday: Optional[str]
+    weight: float
+    height: float
+    bmi: float
+    exams_data: List[Dict[str, Any]]
+    appointments_data: List[Dict[str, Any]]
+    messages: List[Message]
+    gender: str
+    meds_data: List
+    birthday: str
 
 
 @dataclass
