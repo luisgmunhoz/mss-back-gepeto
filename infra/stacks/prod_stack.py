@@ -5,7 +5,6 @@ from aws_cdk.pipelines import CodePipelineSource
 from constructs import Construct
 from infra.stages.deploy import DeployStage
 
-from lambda_forge.constants import ECR
 from lambda_forge.context import context
 from lambda_forge.steps import CodeBuildSteps
 
@@ -40,8 +39,8 @@ class ProdStack(cdk.Stack):
         # integration_tests = steps.integration_tests()
 
         # post
-        diagram = steps.diagram()
-        redoc = steps.redoc()
+        # diagram = steps.diagram()
+        # redoc = steps.redoc();
         swagger = steps.swagger()
 
         pipeline.add_stage(
@@ -51,8 +50,8 @@ class ProdStack(cdk.Stack):
                 # integration_tests,
             ],
             post=[
-                diagram,
-                redoc,
+                # diagram,
+                # redoc,
                 swagger,
             ],
         )
