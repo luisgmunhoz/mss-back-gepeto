@@ -8,5 +8,5 @@
 
 
 ## Vídeo T1
-<a href="">Assista aqui o vídeo do T1</a>
+<a href="https://www.youtube.com/watch?v=BxhvH8hIGz8">Assista aqui o vídeo do T1</a>
 
