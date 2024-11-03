@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
