@@ -54,17 +54,7 @@ class HealthAssistantView(APIView):
                 prompt += " e não tem dados de exames cadastrados, você deve responder sua pergunta em português e recomendar que ele cadastre seus exames no sistema."
                 analysis = self.get_analysis(message, prev_messages, client, prompt)
                 return Response(
-                    {
-                        "weight": weight,
-                        "height": height,
-                        "bmi": bmi,
-                        "request": message,
-                        "message": analysis,
-                        "exams": exams_data,
-                        "appointments": appointments_data,
-                        "medications": meds_data,
-                        "birthday": birthday,
-                    },
+                    {"message": analysis},
                     status=status.HTTP_200_OK,
                 )
 
