@@ -10,3 +10,5 @@
 ## Vídeo T1
 <a href="https://www.youtube.com/watch?v=BxhvH8hIGz8">Assista aqui o vídeo do T1</a>
 
+## Vídeo T2
+<a href="https://youtu.be/AyqFyquLICk">Assista aqui o vídeo do T2</a>
